@@ -33,13 +33,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'accounts.apps.AccountsConfig',  # приложение accounts
+    'accounts.apps.AccountsConfig',  # приложение accounts (наше)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'images.apps.ImagesConfig',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'bookmarks.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -114,9 +115,35 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = 'static/'
+# -------------------------------------------------------- STATIC settings
+
+STATIC_URL = '/static/'
+
+# здесь мы указываем откуда будем доставать статику и подключать к шаблону,
+# с помощью тега {% static 'css/style.css' %}
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+# здесь мы указываем куда django будет собирать всю статику проекта при команде collectstatic
+# на самом деле это основная папка, от куда берется статика проекта
+# и должна называться они staticfiles
+STATIC_ROOT = BASE_DIR.joinpath('staticfiles')
+# -------------------------------------------------------- STATIC settings
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# -------------------------------------- LOGIN
+
+# куда django будет перенаправлять при успешной авторизации (если не указан GET параметр next)
+LOGIN_REDIRECT_URL = 'accounts:dashboard'
+
+# при декоратре @login_required или LoginRequiredMixin - куда перенаравлять для авторизации
+LOGIN_URL = 'accounts:login'
+
+# адрес по которому пользователь выйдет из своего аккаунта (разорвётся сессия)
+LOGOUT_URL = 'accounts:logout'
+# -------------------------------------- LOGIN
