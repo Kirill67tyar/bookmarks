@@ -187,8 +187,8 @@ ul.messages li a.close {
     display:block;
     color:#fff;
 }
-.social li.facebook { background:#3b5399; }
-.social li.twitter { background:#00cffa; }
+.social li.yandex { background:#b5b214; }/* #969412*/
+.social li.vk { background:#408cff; }
 .social li.google { background:#de1710; }
 
 

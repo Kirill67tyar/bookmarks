@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'mysite.com', ]
 
 # Application definition
 
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'images.apps.ImagesConfig',
+    'social_django',
 ]
 
 MIDDLEWARE = [
@@ -159,3 +160,26 @@ MEDIA_URL = '/media/'
 # путь в файловой системе, где эти файлы будут храниться
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 ## -------------------------------------- MEDIA
+
+
+# --------------------------------------- AUTHENTICATION BACKENDS
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'accounts.authentications.EmailAuthBackend',
+    'social_core.backends.google.GoogleOAuth2',  # for google
+    'social_core.backends.yandex.YandexOAuth2',  # for yandex
+    'social_core.backends.vk.VKOAuth2',  # for vk
+]
+
+# google
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+
+# yandex
+SOCIAL_AUTH_YANDEX_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_YANDEX_OAUTH2_KEY')
+SOCIAL_AUTH_YANDEX_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_YANDEX_OAUTH2_SECRET')
+
+# vk
+SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_VK_OAUTH2_KEY')
+SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_VK_OAUTH2_SECRET')
+# --------------------------------------- AUTHENTICATION BACKENDS

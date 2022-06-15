@@ -13,11 +13,58 @@ def get_object_or_null(model, **kwargs):
 
 
 
+cyrillic_letters = {
+    u'а': u'a',
+    u'б': u'b',
+    u'в': u'v',
+    u'г': u'g',
+    u'д': u'd',
+    u'е': u'e',
+    u'ё': u'e',
+    u'ж': u'zh',
+    u'з': u'z',
+    u'и': u'i',
+    u'й': u'i',
+    u'к': u'k',
+    u'л': u'l',
+    u'м': u'm',
+    u'н': u'n',
+    u'о': u'o',
+    u'п': u'p',
+    u'р': u'r',
+    u'с': u's',
+    u'т': u't',
+    u'у': u'u',
+    u'ф': u'f',
+    u'х': u'h',
+    u'ц': u'ts',
+    u'ч': u'ch',
+    u'ш': u'sh',
+    u'щ': u'sch',
+    u'ь': u'',
+    u'ы': u'y',
+    u'ъ': u'',
+    u'э': u'e',
+    u'ю': u'u',
+    u'я': u'ya',
 
+}
+
+
+def from_cyrilic_to_eng(text: str):
+    text = text.replace(' ', '-').lower()
+    result = ''
+    for char in text:
+        result += cyrillic_letters.get(char, char)
+    return result
+
+
+
+# -------------------------------------------------- analizetools
 # # for import
 # from analizetools.analize import (
 #     p_dir, p_mro, p_glob, p_loc, p_type,
-#     delimetr, p_content, show_builtins, show_doc,
+#     delimiter, p_content, show_builtins, show_doc, console_compose,
 # )
 
 # p_dir, p_mro, p_glob, p_loc, p_content, show_builtins, show_doc, delimiter
@@ -66,7 +113,7 @@ def show_doc(obj):
     return print(obj.__doc__)
 
 
-def delimiter(sym='-+', quant=50):
+def delimiter(sym='- ', quant=50):
     return print('\n', sym * quant, end='\n')
 
 
@@ -83,3 +130,21 @@ def console(*args, delimetr='- ', length=50):
 
 def p_type(obj):
     return print(type(obj))
+
+
+def console_compose(obj, stype=True, smro=True, sdir=True,
+                    delimiter=delimiter, start=delimiter, end=delimiter):
+    params = (
+        (stype, p_type,),
+        (smro, p_mro,),
+        (sdir, p_dir,),
+
+    )
+    for action, func in params:
+        if action:
+            if params.index((action, func,)) == 0:
+                start()
+            else:
+                delimiter()
+            func(obj)
+    end()

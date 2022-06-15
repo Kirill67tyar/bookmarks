@@ -17,7 +17,7 @@ class LoginForm(forms.Form):
         cd = self.cleaned_data
         username = cd.get('username')
         password = cd.get('password')
-        user = get_object_or_null(User, username=username)
+        user = get_object_or_null(User, username=username) or get_object_or_null(User, email=username)
         if not user:
             raise forms.ValidationError('Такого пользователя не существует')
         if not check_password(password, user.password):

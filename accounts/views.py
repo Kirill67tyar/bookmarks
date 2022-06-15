@@ -24,6 +24,12 @@ from accounts.forms import (
     ProfileModelForm,
     UserRegistraionModelForm,
 )
+from images.utils import (
+    p_dir, p_mro, p_glob, p_loc, p_type,
+    delimiter, p_content, show_builtins, show_doc, console_compose,
+)
+
+# p_dir, p_mro, p_glob, p_loc, p_content, show_builtins, show_doc, delimiter
 
 User = get_user_model()
 
@@ -60,6 +66,11 @@ def dashboard_view(request):
     ctx = {
         'action': 'dashboard',
     }
+
+    # --- for console ---
+    # console_compose(request)
+    # --- for console ---
+
     return render(
         request=request,
         template_name='accounts/dashboard.html',
