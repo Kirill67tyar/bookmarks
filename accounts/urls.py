@@ -7,6 +7,7 @@ from accounts.views import (
     logout_view,
     register_view,
     dashboard_view,
+    login_through_get_view,
     UpgradedPasswordChangeView,
     UpgradedPasswordResetView,
     UpgradedPasswordResetConfirmView,
@@ -19,7 +20,7 @@ urlpatterns = [
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('register/', register_view, name='register'),
-
+    path('login-get/', login_through_get_view, name='login_through_get_view'),  # нужно для ngrok
     # path('login/', auth_views.LoginView.as_view(), name='login'),
     # path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 

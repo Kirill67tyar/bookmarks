@@ -62,5 +62,11 @@ class Image(models.Model):
             self.slug = slugify(from_cyrilic_to_eng(str(self.title)))
         super(Image, self).save(*args, **kwargs)
 
-    # def get_absolute_url(self):
-    #     return reverse_lazy('')
+    def get_absolute_url(self):
+        return reverse_lazy(
+            'images:detail',
+            kwargs={
+                'pk': self.pk,
+                'slug': self.slug,
+            }
+        )

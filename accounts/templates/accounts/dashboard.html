@@ -5,4 +5,36 @@
 {% block content %}
 <h1>Dashboard</h1>
 <p>Welcome to your dashboard</p>
+
+{% with total_images_created=request.user.images_created.count %}
+<p>
+    Welcome to your dashboard. You have bookamrked {{ total_images_created }}
+    image{{ total_images_created|pluralize }}
+</p>
+{% endwith %}
+
+<p>
+    Drug the following button to your bookmarks toolbar to bookmark images
+    from other websites
+<!--    <a href="javascript:{# include 'bookmarklet_launcher.js' #}" class="button">-->
+<!--        Bookmark it-->
+<!--    </a>-->
+    <a href="javascript:(function(){
+    if (window.myBookmarklet !== undefined){
+        myBookmarklet();
+    }
+    else {
+        document.body.appendChild(document.createElement('script')).src='https://67e8-195-178-200-101.ngrok.io/static/js/bookmarklet.js?r='+Math.floor(Math.random()*99999999999999999999);
+    }
+})();" class="button">
+        Bookmark it
+    </a>
+</p>
+<p>
+    <a href="{% url 'accounts:edit' %}">You can edit your account</a>
+    &nbsp;or&nbsp;
+    <a href="{% url 'accounts:password_change' %}">change password</a>
+</p>
+
+
 {% endblock %}

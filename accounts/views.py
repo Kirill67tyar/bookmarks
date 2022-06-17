@@ -52,7 +52,9 @@ def login_view(request):
             return redirect('accounts:dashboard')
     else:
         form = LoginForm()
-    return render(request, 'accounts/login.html', {'form': form})
+    return render(request, 'accounts/login.html', {'form': form})\
+
+
 
 
 @login_required
@@ -63,8 +65,11 @@ def logout_view(request):
 
 @login_required
 def dashboard_view(request):
+    user = request.user
+    total_images_created = user.images_created.all().count()#.related_name('images')
     ctx = {
         'action': 'dashboard',
+        # 'total_images_created': total_images_created,
     }
 
     # --- for console ---
@@ -144,3 +149,26 @@ class UpgradedPasswordResetConfirmView(PasswordResetConfirmView):
 # для восстановления пароля пароля
 class UpgradedPasswordResetView(PasswordResetView):
     success_url = reverse_lazy("accounts:password_reset_done")
+
+
+
+@anonymous_requeired
+def login_through_get_view(request):
+    username = request.GET.get('username')
+    if username:
+        form = LoginForm(request.GET)
+        if form.is_valid():
+            cd = form.cleaned_data
+            username = cd.get('username')
+            password = cd.get('password')
+
+            user = authenticate(
+                request,
+                username=username,
+                password=password
+            )
+            login(request, user)
+            return redirect('accounts:dashboard')
+    else:
+        form = LoginForm()
+    return render(request, 'accounts/login_through_get.html', {'form': form})
