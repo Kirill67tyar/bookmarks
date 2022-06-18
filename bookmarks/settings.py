@@ -48,9 +48,11 @@ INSTALLED_APPS = [
     'images.apps.ImagesConfig',
     'social_django',
     'sorl.thumbnail',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -189,3 +191,13 @@ SOCIAL_AUTH_YANDEX_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_YANDEX_OAUTH2_SECRET')
 SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_VK_OAUTH2_KEY')
 SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_VK_OAUTH2_SECRET')
 # --------------------------------------- AUTHENTICATION BACKENDS
+
+# thumbnail
+THUMBNAIL_DEBUG = True
+
+
+# django-debug-toolbar
+def show_toolbar(request):
+    return True
+
+SHOW_TOOLBAR_CALLBACK = show_toolbar

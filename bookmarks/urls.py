@@ -25,8 +25,11 @@ urlpatterns = [
     path('images/', include('images.urls', namespace='images')),
 ]
 
-# ----------- for media ----------------
 if settings.DEBUG:
+    # ----------- for django-debug-toolbar ----------------
+    urlpatterns.append(path('__debug__/', include('debug_toolbar.urls')), )
+
+    # ----------- for media ----------------
     urlpatterns += static(
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT

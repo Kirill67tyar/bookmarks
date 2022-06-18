@@ -3,30 +3,72 @@
 {% block title %}{{ image }}{% endblock %}
 
 {% block content %}
-<h1>{{ image }}</h1>
-<!--<img src="{ image.image.url }" class="image-detail">-->
-{% load thumbnail %}
-{% thumbnail image.image "300" as im %}
-<a href="{{ image.image.url }}">
-    <img src="{{ im.url }}" class="image-detail">
-</a>
-{% endthumbnail %}
+<h1>{{ image.title }}</h1>
+
+<!-- -------------- IMAGE PREVIEW ------------------ -->
+<!--<img src="{ image.image.url }" class="image-detail">&lt;!&ndash; нельзя расширять картинку&ndash;&gt;-->
+
+{% include '_inc/thumbnail_preview.html' %}<!-- можно расширять картинку-->
+<!-- -------------- IMAGE PREVIEW ------------------ -->
+
 <div class="image-info">
     <div>
         <span class="count">
-            {{ total_likes }} like{{ total_likes|pluralize }}
+            <span class="total">
+                {{ total_likes }}
+            </span> like{{ total_likes|pluralize }}
         </span>
+        <a href="#" data-id="{{ image.id }}"
+        data-action="{% if user in users_like %}un{% endif %}like"
+        class="like button">
+            {% if user in users_like %}
+            Unlike
+            {% else %}
+            Like
+            {% endif %}
+        </a>
     </div>
     {{ image.description|linebreaks }}
 </div>
 <div class="image-likes">
-    {% for user in users_like %}
+    {% for u in users_like %}
     <div>
-        <img src="{{ user.profile.photo.url }}">
-        <p>{{ user.username }}</p>
+        <img src="{{ u.profile.photo.url }}">
+        <p>{{ u.username }}</p>
     </div>
     {% empty %}
     Nobody likes this image yet.
     {% endfor %}
 </div>
 {% endblock %}
+<!----------------------------------block domready------------------------->
+<!-- скрипт для лайков (редиректит на {# url 'images:like' #})
+отправляет пост запрос на {# url 'images:like' #} с полями id=...&action=...
+ прием это ajax запрос (в запрос добавляется специальный header) и request.is_ajax() == True -->
+{% block domready %}
+  $('a.like').click(function(e){
+    e.preventDefault();
+    $.post('{% url "images:like" %}',
+      {
+        id: $(this).data('id'),
+        action: $(this).data('action')
+      },
+      function(data){
+        if (data['status'] == 'ok')
+        {
+          var previous_action = $('a.like').data('action');
+
+          // toggle data-action
+          $('a.like').data('action', previous_action == 'like' ? 'unlike' : 'like');
+          // toggle link text
+          $('a.like').text(previous_action == 'like' ? 'Unlike' : 'Like');
+
+          // update total likes
+          var previous_likes = parseInt($('span.count .total').text());
+          $('span.count .total').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+        }
+      }
+    );
+  });
+{% endblock %}
+<!----------------------------------endblock domready------------------------->

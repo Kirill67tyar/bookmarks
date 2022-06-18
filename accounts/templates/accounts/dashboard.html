@@ -16,19 +16,15 @@
 <p>
     Drug the following button to your bookmarks toolbar to bookmark images
     from other websites
-<!--    <a href="javascript:{# include 'bookmarklet_launcher.js' #}" class="button">-->
-<!--        Bookmark it-->
-<!--    </a>-->
-    <a href="javascript:(function(){
-    if (window.myBookmarklet !== undefined){
-        myBookmarklet();
-    }
-    else {
-        document.body.appendChild(document.createElement('script')).src='https://67e8-195-178-200-101.ngrok.io/static/js/bookmarklet.js?r='+Math.floor(Math.random()*99999999999999999999);
-    }
-})();" class="button">
+
+
+
+    <!--  from templates/_inc_js/  -->
+    <a href="javascript:{% include '_inc_js/bookmarklet_launcher.js' %}" class="button">
         Bookmark it
     </a>
+
+
 </p>
 <p>
     <a href="{% url 'accounts:edit' %}">You can edit your account</a>
