@@ -12,3 +12,6 @@ HttpResponseBadRequest() - не ошибка (не унаследован он B
 # from django.contrib.auth.models import User
 #
 # User
+from django.core.handlers.wsgi import WSGIRequest
+
+WSGIRequest

@@ -32,7 +32,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'mysite.com',
-    '67e8-195-178-200-101.ngrok.io',
+    'f57c-87-229-242-205.ngrok.io',
 ]
 
 # Application definition
@@ -137,7 +137,7 @@ STATICFILES_DIRS = [
 # здесь мы указываем куда django будет собирать всю статику проекта при команде collectstatic
 # на самом деле это основная папка, от куда берется статика проекта
 # и должна называться они staticfiles
-STATIC_ROOT = BASE_DIR.joinpath('staticfiles')
+STATIC_ROOT = BASE_DIR.joinpath('bookmarks/staticfiles')
 # -------------------------------------------------------- STATIC settings
 
 # Default primary key field type

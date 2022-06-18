@@ -18,7 +18,8 @@ def anonymous_required(func):
 def ajax_required(func):
     @wraps(func)
     def dec(request, *args, **kwargs):
-        if request.is_ajax():
+        # if request.is_ajax(): # is_ajax() больше нету
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return func(request, *args, **kwargs)
         else:
             return HttpResponseBadRequest()  # послёт HTTP ответ с кодом 400 (bad request)

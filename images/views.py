@@ -7,10 +7,20 @@ from django.shortcuts import (
     redirect,
     HttpResponse,
 )
+from django.core.paginator import (
+    Paginator,
+    PageNotAnInteger,
+    EmptyPage,
+)
 
 from images.models import Image
 from images.forms import ImageCreateModelForm
-from images.utils import get_object_or_null, console
+from images.utils import (
+    get_object_or_null,
+    is_ajax,
+    console,
+    p_dir,
+)
 from common.decorators import ajax_required
 
 
@@ -66,6 +76,7 @@ def detail_image_view(request, pk, slug):
 @require_POST  # HTTPResponseNotAllowed (405)
 @login_required  # bad request (400)
 def like_image_view(request):
+    console(request.headers)
     image_id = request.POST.get('id')
     action = request.POST.get('action')
     user = request.user
@@ -79,3 +90,33 @@ def like_image_view(request):
         except Image.DoesNotExist:
             pass
     return JsonResponse({'status': 'ok', })
+
+
+@login_required
+def list_image_view(request):
+    images = Image.objects.all()
+    paginator = Paginator(object_list=images,
+                          per_page=8)
+    page = request.GET.get('page')
+    try:
+        page_obj = paginator.page(page)
+    except PageNotAnInteger:
+        page_obj = paginator.page(1)
+    except EmptyPage:
+        if is_ajax(request):
+            return HttpResponse('')
+        page_obj = paginator.page(paginator.num_pages)
+    ctx = {
+        'page_obj': page_obj,
+        'action': 'images',
+    }
+    if is_ajax(request):
+        template_name = 'images/list_ajax.html',
+    else:
+        template_name = 'images/list.html',
+
+    return render(
+        request=request,
+        template_name=template_name,
+        context=ctx,
+    )

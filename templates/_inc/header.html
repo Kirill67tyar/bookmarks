@@ -10,7 +10,7 @@
         <a href="{% url 'accounts:dashboard' %}">dashboard</a>
         </li>
         <li {% if action == "images" %}class="selected"{% endif %}>
-        <a href="#">images</a>
+        <a href="{% url 'images:list' %}">images</a>
         </li>
         <li {% if action == "people" %}class="selected"{% endif %}>
         <a href="#">people</a>

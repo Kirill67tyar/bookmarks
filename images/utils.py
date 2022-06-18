@@ -12,7 +12,6 @@ def get_object_or_null(model, **kwargs):
     return model.objects.filter(**kwargs).first()
 
 
-
 cyrillic_letters = {
     u'а': u'a',
     u'б': u'b',
@@ -58,6 +57,9 @@ def from_cyrilic_to_eng(text: str):
         result += cyrillic_letters.get(char, char)
     return result
 
+
+def is_ajax(request):
+    return request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
 
 # -------------------------------------------------- analizetools
@@ -123,7 +125,7 @@ def delimiter(sym='- ', quant=50):
 def console(*args, delimetr='- ', length=50):
     print('\n', '=' * 100)
     for elem in args:
-        print(elem)
+        pprint(elem)
         print(delimetr * length)
     print('=' * 100, '\n')
 
