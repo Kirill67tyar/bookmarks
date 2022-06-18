@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+{% block title %}{{ user.username }}{% endblock %}
+
+{% block content %}
+<h1>{{ user.username }}</h1>
+<div class="profile-info">
+    {% thumbnail user.profile.photo '180x180' crop='100%' as im %}
+    {% if user.profile.photo %}
+    <img src="{{ im.url }}" class="user-detail">
+    {% else %}
+<!--    <img src="media/users/no_preview/No_Preview_image_2.png" class="user-detail">-->
+    {% endif %}
+
+    {% endthumbnail %}
+    <img src="/media/users/no_preview/No_Preview_image_2.png" height="150" width="150">
+</div>
+<span class="count">
+    <span class="total">
+        {{ count_followers }}
+    </span>
+    follower {{ count_followers|pluralize }}
+</span>
+<a href="#" data-id="{{ user.pk }}"
+   data-action="{% if request.user in user_followers %}un{% endif %}follow"
+   class="follow button">
+    {% if request.user in followers %}
+    Unfollow
+    {% else %}
+    Follow
+    {% endif %}
+</a>
+<div id="image-list" class="image-container">
+    <!--очень классный пример использования with и другого шаблона
+    с переопределением переменной в контексте-->
+    {% include 'images/list_ajax.html' with page_obj=user.images_created.all %}
+</div>
+{% endblock %}
+<!----------------------------------block domready------------------------->
+{% block domready %}
+  $('a.follow').click(function(e){
+    e.preventDefault();
+    $.post('{# url "accounts:user_follow" #}',
+      {
+        id: $(this).data('id'),
+        action: $(this).data('action')
+      },
+      function(data){
+        if (data['status'] == 'ok') {
+          var previous_action = $('a.follow').data('action');
+
+          // toggle data-action
+          $('a.follow').data('action',
+            previous_action == 'follow' ? 'unfollow' : 'follow');
+          // toggle link text
+          $('a.follow').text(
+            previous_action == 'follow' ? 'Unfollow' : 'Follow');
+
+          // update total followers
+          var previous_followers = parseInt(
+            $('span.count .total').text());
+          $('span.count .total').text(previous_action == 'follow' ? previous_followers + 1 : previous_followers - 1);
+        }
+      }
+    );
+  });
+{% endblock %}
+<!----------------------------------endblock domready------------------------->

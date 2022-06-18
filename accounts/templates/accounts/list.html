@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load thumbnail %}
+
+{% block title %}People{% endblock %}
+
+{% block content %}
+<h1>People</h1>
+<p>You can edit your account using the following form</p>
+<div id="people-list">
+    {% for user in object_list %}
+    <div class="user">
+        <a href="{{ user.get_absolute_url }}">
+            {% thumbnail user.profile.photo '180x180' crop='100%' as im %}
+            {% if user.profile.photo %}
+            <img src="{{ im.url }}">
+            {% else %}
+            <img src="media/users/no_preview/No_Preview_image_2.png">
+            {% endif %}
+            {% endthumbnail %}
+        </a>
+        <div class="info">
+            <a href="{{ user.get_absolute_url }}" class="title">
+                {{ user.username }}
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,8 +1,12 @@
 from django.contrib import messages
 from django.http import HttpResponse
 from django.urls import reverse, reverse_lazy
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import (
+    render,
+    redirect,
+    get_object_or_404,
+)
 from django.contrib.auth import (
     login, logout,
     authenticate,
@@ -52,12 +56,11 @@ def login_view(request):
             return redirect('accounts:dashboard')
     else:
         form = LoginForm()
-    return render(request, 'accounts/login.html', {'form': form})\
+    return render(request, 'accounts/login.html', {'form': form}) \
+ \
+           @ login_required
 
 
-
-
-@login_required
 def logout_view(request):
     logout(request)
     return redirect('accounts:login')
@@ -66,7 +69,7 @@ def logout_view(request):
 @login_required
 def dashboard_view(request):
     user = request.user
-    total_images_created = user.images_created.all().count()#.related_name('images')
+    total_images_created = user.images_created.all().count()  # .related_name('images')
     ctx = {
         'action': 'dashboard',
         # 'total_images_created': total_images_created,
@@ -136,6 +139,34 @@ def edit_view(request):
     return render(request, 'accounts/edit.html', context=ctx)
 
 
+@login_required
+def list_user_view(request):
+    object_list = User.objects.filter(is_active=True)
+    ctx = {
+        'object_list': object_list,
+        'action': 'people',
+    }
+    return render(request, 'accounts/list.html', ctx)
+
+
+@login_required
+def detail_user_view(request, username):
+    user = get_object_or_404(
+        klass=User,
+        username=username,
+        is_active=True
+    )
+    count_followers = user.followers.filter(is_active=True).count()
+    followers = user.followers.filter(is_active=True)
+    ctx = {
+        'user': user,
+        'action': 'people',
+        'count_followers': count_followers,
+        'followers': followers,
+    }
+    return render(request, 'accounts/detail.html', ctx)
+
+
 # для смены пароля
 class UpgradedPasswordChangeView(PasswordChangeView):
     success_url = reverse_lazy('accounts:password_change_done')
@@ -149,7 +180,6 @@ class UpgradedPasswordResetConfirmView(PasswordResetConfirmView):
 # для восстановления пароля пароля
 class UpgradedPasswordResetView(PasswordResetView):
     success_url = reverse_lazy("accounts:password_reset_done")
-
 
 
 @anonymous_requeired

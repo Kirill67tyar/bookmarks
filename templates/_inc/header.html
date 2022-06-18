@@ -13,7 +13,7 @@
         <a href="{% url 'images:list' %}">images</a>
         </li>
         <li {% if action == "people" %}class="selected"{% endif %}>
-        <a href="#">people</a>
+        <a href="{% url 'accounts:list_user' %}">people</a>
         </li>
     </ul>
     {% endif %}

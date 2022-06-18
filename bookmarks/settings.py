@@ -14,6 +14,8 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
+from django.urls import reverse_lazy
+
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -190,14 +192,20 @@ SOCIAL_AUTH_YANDEX_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_YANDEX_OAUTH2_SECRET')
 # vk
 SOCIAL_AUTH_VK_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_VK_OAUTH2_KEY')
 SOCIAL_AUTH_VK_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_VK_OAUTH2_SECRET')
+
+# добавляем динамически в модель User метод get_absolute_url() - '/accounts/users/<username>/'
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda user: reverse_lazy(
+        'accounts:detail_user',
+        kwargs={
+            'username': user.username
+        }
+    ),
+}
 # --------------------------------------- AUTHENTICATION BACKENDS
 
 # thumbnail
 THUMBNAIL_DEBUG = True
 
-
-# django-debug-toolbar
-def show_toolbar(request):
-    return True
-
-SHOW_TOOLBAR_CALLBACK = show_toolbar
+# --------------------------------------- django-debug-toolbar
+INTERNAL_IPS = ('127.0.0.1',)
