@@ -9,6 +9,7 @@ from accounts.views import (
     dashboard_view,
     list_user_view,
     detail_user_view,
+    follow_user_view,
     login_through_get_view,
     UpgradedPasswordChangeView,
     UpgradedPasswordResetView,
@@ -27,8 +28,9 @@ urlpatterns = [
     # path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     # Read - list, detail
-    path('list/', list_user_view, name='list_user'),
-    path('detail/<str:username>/', detail_user_view, name='detail_user'),
+    path('users/', list_user_view, name='list_user'),
+    path('users/follow/', follow_user_view, name='user_follow'),
+    path('users/<str:username>/', detail_user_view, name='detail_user'),
 
     # для смены пароля
     path('password-change/', UpgradedPasswordChangeView.as_view(), name='password_change'),

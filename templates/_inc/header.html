@@ -6,13 +6,13 @@
 
     {% if user.is_authenticated %}
     <ul class="menu">
-        <li {% if action == "dashboard" %}class="selected"{% endif %}>
+        <li {% if section == "dashboard" %}class="selected"{% endif %}>
         <a href="{% url 'accounts:dashboard' %}">dashboard</a>
         </li>
-        <li {% if action == "images" %}class="selected"{% endif %}>
+        <li {% if section == "images" %}class="selected"{% endif %}>
         <a href="{% url 'images:list' %}">images</a>
         </li>
-        <li {% if action == "people" %}class="selected"{% endif %}>
+        <li {% if section == "people" %}class="selected"{% endif %}>
         <a href="{% url 'accounts:list_user' %}">people</a>
         </li>
     </ul>

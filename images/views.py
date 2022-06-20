@@ -21,6 +21,7 @@ from images.utils import (
     console,
     p_dir,
 )
+from actions.utils import create_action
 from common.decorators import ajax_required
 
 
@@ -33,6 +34,10 @@ def create_image_view(request):
             image.owner = request.user
             image.save()
             messages.success(request=request, message='Image successfully saved')
+            create_action(
+                user=request.user,
+                verb='bookmarked image',
+                target=image)
             return redirect(image.get_absolute_url())
         else:
             messages.success(request=request, message='Something went wrong (image not saved)')
@@ -68,28 +73,9 @@ def detail_image_view(request, pk, slug):
             'total_likes': total_likes,
             'users_like': users_like,
             'user': user,
+            'section': 'images',
         }
     )
-
-
-@ajax_required  # bad request (400)
-@require_POST  # HTTPResponseNotAllowed (405)
-@login_required  # bad request (400)
-def like_image_view(request):
-    console(request.headers)
-    image_id = request.POST.get('id')
-    action = request.POST.get('action')
-    user = request.user
-    if image_id and action:
-        try:
-            image = Image.objects.get(pk=image_id)
-            if action == 'like':
-                image.users_like.add(user)
-            else:
-                image.users_like.remove(user)
-        except Image.DoesNotExist:
-            pass
-    return JsonResponse({'status': 'ok', })
 
 
 @login_required
@@ -108,7 +94,7 @@ def list_image_view(request):
         page_obj = paginator.page(paginator.num_pages)
     ctx = {
         'page_obj': page_obj,
-        'action': 'images',
+        'section': 'images',
     }
     if is_ajax(request):
         template_name = 'images/list_ajax.html',
@@ -120,3 +106,28 @@ def list_image_view(request):
         template_name=template_name,
         context=ctx,
     )
+
+
+@ajax_required  # bad request (400)
+@require_POST  # HTTPResponseNotAllowed (405)
+@login_required  # bad request (400)
+def like_image_view(request):
+    console(request.headers)
+    image_id = request.POST.get('id')
+    action = request.POST.get('action')
+    user = request.user
+    if image_id and action:
+        try:
+            image = Image.objects.get(pk=image_id)
+            if action == 'like':
+                image.users_like.add(user)
+                create_action(
+                    user=user,
+                    verb='likes',
+                    target=image
+                )
+            else:
+                image.users_like.remove(user)
+        except Image.DoesNotExist:
+            pass
+    return JsonResponse({'status': 'ok', })

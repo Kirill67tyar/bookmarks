@@ -33,7 +33,11 @@
 <div class="image-likes">
     {% for u in users_like %}
     <div>
+        {% if u.profile.photo %}
         <img src="{{ u.profile.photo.url }}">
+        {% else %}
+        <img src="/media/users/no_preview/No_Preview_image_2.png">
+        {% endif %}
         <p>{{ u.username }}</p>
     </div>
     {% empty %}

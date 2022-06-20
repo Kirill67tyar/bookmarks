@@ -18,7 +18,6 @@
     from other websites
 
 
-
     <!--  from templates/_inc_js/  -->
     <a href="javascript:{% include '_inc_js/bookmarklet_launcher.js' %}" class="button">
         Bookmark it
@@ -31,6 +30,36 @@
     &nbsp;or&nbsp;
     <a href="{% url 'accounts:password_change' %}">change password</a>
 </p>
+<h2>
+    What's happening?
+</h2>
+<div id="action-list">
 
-
+    {% include 'actions/actions_list.html' %}
+</div>
 {% endblock %}
+<!----------------------------------block domready------------------------->
+
+{% block domready %}
+  var page = 1;
+  var empty_page = false;
+  var block_request = false;
+
+  $(window).scroll(function() {
+    var margin = $(document).height() - $(window).height() - 200;
+    if  ($(window).scrollTop() > margin && empty_page == false && block_request == false) {
+     block_request = true;
+      page += 1;
+      $.get('?page=' + page, function(data) {
+       if(data == '') {
+          empty_page = true;
+        }
+        else {
+          block_request = false;
+          $('#action-list').append(data);
+        }
+      });
+    }
+  });
+{% endblock %}
+<!----------------------------------endblock domready------------------------->

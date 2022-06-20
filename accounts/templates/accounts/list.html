@@ -10,13 +10,15 @@
     {% for user in object_list %}
     <div class="user">
         <a href="{{ user.get_absolute_url }}">
-            {% thumbnail user.profile.photo '180x180' crop='100%' as im %}
             {% if user.profile.photo %}
+            {% thumbnail user.profile.photo '180x180' crop='100%' as im %}
+
             <img src="{{ im.url }}">
-            {% else %}
-            <img src="media/users/no_preview/No_Preview_image_2.png">
-            {% endif %}
             {% endthumbnail %}
+            {% else %}
+            <img src="/media/users/no_preview/No_Preview_image_2.png">
+            {% endif %}
+
         </a>
         <div class="info">
             <a href="{{ user.get_absolute_url }}" class="title">
