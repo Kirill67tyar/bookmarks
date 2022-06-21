@@ -1,3 +1,6 @@
+from redis import StrictRedis, exceptions
+
+from django.conf import settings
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
@@ -22,7 +25,17 @@ from images.utils import (
     p_dir,
 )
 from actions.utils import create_action
-from common.decorators import ajax_required
+from common.decorators import (
+    ajax_required,
+    admin_required,
+)
+
+# создаём соединение с базой данных Redis
+redis_db = StrictRedis(
+    host=settings.REDIS_HOST,
+    port=settings.REDIS_PORT,
+    db=settings.REDIS_DB
+)
 
 
 @login_required
@@ -65,6 +78,18 @@ def detail_image_view(request, pk, slug):
 
     total_likes = image.users_like.count()
     users_like = image.users_like.filter(is_active=True)
+
+    # увеличивает ключ на один, и возвращает итоговое значение.
+    # если ключа не было - создаёт его
+    try:
+        total_views = redis_db.incr(name=f'image:{image.pk}:views')
+        redis_db.zincrby(
+            name='image_ranking',  # название последовательности для ранжирования
+            amount=1.,  # увеличиваем на 1.0
+            value=image.pk  # что будет храниться в последовательности для ранжирования
+        )
+    except exceptions.ConnectionError:
+        total_views = ''
     return render(
         request=request,
         template_name='images/detail.html',
@@ -72,6 +97,7 @@ def detail_image_view(request, pk, slug):
             'image': image,
             'total_likes': total_likes,
             'users_like': users_like,
+            'total_views': total_views,
             'user': user,
             'section': 'images',
         }
@@ -130,4 +156,37 @@ def like_image_view(request):
                 image.users_like.remove(user)
         except Image.DoesNotExist:
             pass
+    return JsonResponse({'status': 'ok', })
+
+
+@login_required
+def ranking_image_view(request):
+    ranked_images = redis_db.zrange(
+        name='image_ranking',  # имя последовтельности, куда сохраняем ранжированные id
+        start=0,  # с первого индекса
+        end=-1,  # до последнего (т.е. до конца)
+        desc=True  # по убванию
+    )
+    ranked_images_ids = [int(i) for i in ranked_images]
+    most_viewed_images = list(Image.objects.filter(
+        pk__in=ranked_images_ids
+    ))
+    most_viewed_images.sort(
+        key=lambda x: ranked_images_ids.index(x.pk)
+    )
+    return render(
+        request=request,
+        template_name='images/ranking.html',
+        context={
+            'most_viewed_images': most_viewed_images,
+            'section': 'images',
+        }
+    )
+
+
+@admin_required
+def reset_likes_view(request):
+    for image in Image.objects.all():
+        image.total_likes = image.users_like.filter(is_active=True).count()
+        image.save()
     return JsonResponse({'status': 'ok', })

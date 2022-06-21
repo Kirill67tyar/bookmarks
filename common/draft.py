@@ -8,34 +8,72 @@ from django.http import HttpResponseBadRequest
 HttpResponseBadRequest() - не ошибка (не унаследован он BaseException)
 поэтому просто вызывается без raise
 посылает HTTP-response с кододм ответа 400 (bad request)
-"""
-# from django.contrib.auth.models import User
+
+
+
+
+# Характеристики:
 #
-# User
-@login_required
-def dashboard_view(request):
-    actions = Action.objects.exclude(user=request.user)
-    following_ids = request.user.following.values_list('id', flat=True)
-    if following_ids:
-        actions = actions.filter(user_id__in=following_ids)
-    actions = actions.select_related('user', 'user__profile').prefetch_related('target')
-    paginator = Paginator(actions, 6)
-    num_page = request.GET.get('page')
-    try:
-        actions = paginator.page(num_page)
-    except PageNotAnInteger:
-        actions = paginator.page(1)
-    except EmptyPage:
-        if request.is_ajax():
-            return HttpResponse('')
-        else:
-            actions = paginator.page(paginator.num_pages)
-    context = {
-        'section': 'dashboard',
-        'actions': actions,
-    }
-    if request.is_ajax():
-        template_name = 'actions/action/actions_list.html'
-    else:
-        template_name = 'accounts/dashboard.html'
-    return render(request, template_name=template_name, context=context)
+#  - оптимизировано для быстрого ввода-вывода.
+#  - позволяет использовать различные структуры данных
+#  - хранит данные в оперативной памяти, но можно настроить
+#     копирование блоков данных на диски с определённой переодичностью
+#     или при насуплении некоторого действия
+#  - хорошо расширяется, довольно гибкий
+#
+# Поддерживает типы данных:
+#
+#  - строки
+#  - хеши
+#  - списки
+#  - кортежи
+#  - сортированные кортежи
+#  - битовые карты
+#  - HyperLogLogs
+#
+#
+#
+# SQL лучше подходит - долговременное хранения относительно постоянных данных
+# Redis лучше подходит - часто изменяющейся информации или той, к которой
+#                         необходимо иметь быстрый доступ (например к кешу)
+
+
+# Консоль
+# порт Redis - 6379
+# Параллельно сервер Redis должен быть запущен в другой консоли
+# установка и запуск Redis (если установлен, то приступай сразу к запуску)
+# https://skillbox.ru/media/base/kak_ustanovit_redis_v_os_windows_bez_ispolzovaniya_docker/
+#
+#
+# redis-cli
+# 127.0.0.1:6379> EXPIRE name 2
+# (integer) 1
+# 127.0.0.1:6379> GET name
+# (nil)
+# 127.0.0.1:6379> GET total 1
+# (error) ERR wrong number of arguments for 'get' command
+# 127.0.0.1:6379> SET total 1
+# OK
+# 127.0.0.1:6379> GET total
+# "1"
+# 127.0.0.1:6379> DEL total
+# (integer) 1
+# 127.0.0.1:6379> GET total
+# (nil)
+
+
+"""
+
+"""
+from pprint import pprint as pp
+from django.db import connection, reset_queries
+reset_queries()
+connection.queries
+"""
+
+
+from redis import StrictRedis, Redis
+
+r = Redis('123',123,123)
+r.zincrby
+r.zrange()

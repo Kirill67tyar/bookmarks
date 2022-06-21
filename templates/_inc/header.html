@@ -15,6 +15,9 @@
         <li {% if section == "people" %}class="selected"{% endif %}>
         <a href="{% url 'accounts:list_user' %}">people</a>
         </li>
+        <li>
+        <a href="{% url 'images:ranking' %}">most viewed images</a>
+        </li>
     </ul>
     {% endif %}
     <span class="user">

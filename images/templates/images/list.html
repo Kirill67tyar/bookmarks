@@ -4,6 +4,9 @@
 
 {% block content %}
 <h1>Images bookmarked</h1>
+<a href="{% url 'images:ranking' %}">See most viewed images</a>
+<br>
+<hr>
 <div id="image-list">
     {% include 'images/list_ajax.html' %}
 </div>

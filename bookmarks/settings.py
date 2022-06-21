@@ -210,3 +210,8 @@ THUMBNAIL_DEBUG = True
 
 # --------------------------------------- django-debug-toolbar
 INTERNAL_IPS = ('127.0.0.1',)
+
+# --------------------------------------- Redis
+REDIS_HOST = 'localhost'  # 127.0.0.1  some_pro_host.ru
+REDIS_PORT = 6379
+REDIS_DB = 0
